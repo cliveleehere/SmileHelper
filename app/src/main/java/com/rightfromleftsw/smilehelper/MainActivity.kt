@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cliveleehere.smilehelper
+package com.rightfromleftsw.smilehelper
 
 import android.app.Activity
 import android.app.ActivityManager
@@ -24,7 +24,6 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.cliveleehere.smilehelper.face.FaceDetectorWrapper
 import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
 import com.google.ar.core.Session
@@ -32,6 +31,7 @@ import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
+import com.rightfromleftsw.smilehelper.face.FaceDetectorWrapper
 
 /**
  * This is an example activity that uses the Sceneform UX package to make common AR tasks easier.

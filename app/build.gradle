@@ -9,7 +9,7 @@ android {
     compileSdkVersion compileSdk
 
     defaultConfig {
-        applicationId "com.cliveleehere.smilehelper"
+        applicationId "com.rightfromleftsw.smilehelper"
 
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion minSdk

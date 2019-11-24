@@ -1,4 +1,4 @@
-package com.cliveleehere.smilehelper.face
+package com.rightfromleftsw.smilehelper.face
 
 import android.content.ContentValues.TAG
 import android.content.Context
