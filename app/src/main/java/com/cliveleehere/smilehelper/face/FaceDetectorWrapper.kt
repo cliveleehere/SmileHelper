@@ -8,10 +8,10 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.media.Image
 import android.os.Build
-import android.support.annotation.RequiresApi
 import android.util.Log
 import android.util.SparseIntArray
 import android.view.Surface
+import androidx.annotation.RequiresApi
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
