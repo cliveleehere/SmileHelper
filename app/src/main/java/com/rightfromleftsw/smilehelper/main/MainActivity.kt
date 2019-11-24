@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rightfromleftsw.smilehelper
+package com.rightfromleftsw.smilehelper.main
 
 import android.app.Activity
 import android.app.ActivityManager
@@ -31,7 +31,9 @@ import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
+import com.rightfromleftsw.smilehelper.R
 import com.rightfromleftsw.smilehelper.face.FaceDetectorWrapper
+import javax.inject.Inject
 
 /**
  * This is an example activity that uses the Sceneform UX package to make common AR tasks easier.
@@ -41,13 +43,13 @@ class MainActivity : AppCompatActivity() {
   private lateinit var arFragment: ArFragment
   private var kangarooModel: ModelRenderable? = null
 
-  private lateinit var faceDetector: FaceDetectorWrapper
+  @Inject
+  lateinit var faceDetector: FaceDetectorWrapper
 
   private lateinit var session: Session
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    faceDetector = FaceDetectorWrapper(applicationContext)
 
     if (!checkIsSupportedDeviceOrFinish(this)) {
       return
@@ -93,7 +95,7 @@ class MainActivity : AppCompatActivity() {
 
   companion object {
     private val TAG = MainActivity::class.java.simpleName
-    private val MIN_OPENGL_VERSION = 3.0
+    private const val MIN_OPENGL_VERSION = 3.0
 
     /**
      * Returns false and displays an error message if Sceneform can not run, true if Sceneform can run

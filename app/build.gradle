@@ -71,6 +71,13 @@ dependencies {
     implementation 'com.google.firebase:firebase-ml-vision-face-model:19.0.0'
 
     implementation "androidx.lifecycle:lifecycle-extensions:2.1.0"
+
+    //Dagger
+    implementation dep.dagger.core
+    kapt dep.dagger.compiler
+    implementation dep.dagger.android
+    implementation dep.dagger.androidSupport
+    kapt dep.dagger.androidProcessor
 }
 
 apply plugin: 'com.google.ar.sceneform.plugin'
