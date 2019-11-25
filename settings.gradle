@@ -1,4 +1,4 @@
-include ':app'
+include ':app', ':domain'
 
 // Uncomment to include the source version of the ux package in your project.
 //include ':sceneformux'

@@ -10,7 +10,7 @@ ext {
     multidex_version = '2.0.1'
 
     rxjava_version = "2.2.0"
-    daggerVersion = "2.25.2"
+    dagger_version = "2.25.2"
 
     arCoreVersion = "1.13.0"
 
@@ -19,18 +19,15 @@ ext {
     junit_version = "4.12"
     truth_version = "0.42"
     robolectric_version = "4.3"
-
-    //deprecate...
-    lifecycleVersion = "2.0.0"
-    androidSupportVersion = "28.0.0"
+    lifecycle_version = "2.1.0"
 
     dep = [
             dagger : [
-                    core : "com.google.dagger:dagger:$daggerVersion",
-                    compiler : "com.google.dagger:dagger-compiler:$daggerVersion",
-                    android : "com.google.dagger:dagger-android:$daggerVersion",
-                    androidSupport : "com.google.dagger:dagger-android-support:$daggerVersion",
-                    androidProcessor : "com.google.dagger:dagger-android-processor:$daggerVersion"
+                    core : "com.google.dagger:dagger:$dagger_version",
+                    compiler : "com.google.dagger:dagger-compiler:$dagger_version",
+                    android : "com.google.dagger:dagger-android:$dagger_version",
+                    androidSupport : "com.google.dagger:dagger-android-support:$dagger_version",
+                    androidProcessor : "com.google.dagger:dagger-android-processor:$dagger_version"
             ],
     ]
 }

@@ -50,15 +50,7 @@ android {
 }
 
 dependencies {
-
-    // Provides ArFragment, and other Sceneform UX resources:
-    implementation "com.google.ar.sceneform.ux:sceneform-ux:$arCoreVersion"
-
-    // Use the Sceneform UX Package built from the source files included in the sceneformux folder.
-    //api project(":sceneformux")
-
-    // Alternatively, use ArSceneView without the UX dependency.
-    //implementation "com.google.ar.sceneform:core:1.6.0"
+    implementation project(":domain")
 
     implementation "androidx.appcompat:appcompat:1.1.0"
     implementation "androidx.media:media:1.1.0"
@@ -70,7 +62,10 @@ dependencies {
     implementation "com.google.firebase:firebase-ml-vision:24.0.1"
     implementation 'com.google.firebase:firebase-ml-vision-face-model:19.0.0'
 
-    implementation "androidx.lifecycle:lifecycle-extensions:2.1.0"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
 
     //Dagger
     implementation dep.dagger.core
@@ -85,13 +80,3 @@ apply plugin: 'com.google.gms.google-services'
 repositories {
     mavenCentral()
 }
-
-sceneform.asset('sampledata/models/andy.obj',
-        'default',
-        'sampledata/models/andy.sfa',
-        'src/main/res/raw/andy')
-
-sceneform.asset('sampledata/models/kangaroo.obj',
-        'default',
-        'sampledata/models/kangaroo.sfa',
-        'src/main/res/raw/kangaroo')
