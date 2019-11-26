@@ -6,7 +6,8 @@ import dagger.android.AndroidInjector
 
 @Component(modules = [
   AndroidInjectionModule::class,
-  ApplicationModule::class
+  ApplicationModule::class,
+  ActivityModule::class
 ])
 interface ApplicationComponent: AndroidInjector<SmilesHelperApplication> {
   @Component.Factory
