@@ -14,7 +14,7 @@ class CameraXWrapper(
     private val owner: LifecycleOwner
 ) : CameraInterface {
 
-  override val layoutId: Int = R.layout.activity_camerax
+  override val layoutId: Int = R.layout.camerax_view_finder
 
   override val viewFinderId: Int = R.id.camerax_view_finder
 
@@ -25,34 +25,37 @@ class CameraXWrapper(
   }
 
   override fun startCamera(viewFinder: View) {
+    // TextureView defined in the layout
     require(viewFinder is TextureView)
 
-    // Create configuration object for the viewfinder use case
-    val previewConfig = PreviewConfig.Builder().apply {
-      setTargetResolution(Size(640, 480))
-    }.build()
+    viewFinder.post {
+      // Create configuration object for the viewfinder use case
+      val previewConfig = PreviewConfig.Builder().apply {
+        setTargetResolution(Size(640, 480))
+      }.build()
 
 
-    // Build the viewfinder use case
-    val preview = Preview(previewConfig)
+      // Build the viewfinder use case
+      val preview = Preview(previewConfig)
 
-    // Every time the viewfinder is updated, recompute layout
-    preview.setOnPreviewOutputUpdateListener {
+      // Every time the viewfinder is updated, recompute layout
+      preview.setOnPreviewOutputUpdateListener {
 
-      // To update the SurfaceTexture, we have to remove it and re-add it
-      val parent = viewFinder.parent as ViewGroup
-      parent.removeView(viewFinder)
-      parent.addView(viewFinder, 0)
+        // To update the SurfaceTexture, we have to remove it and re-add it
+        val parent = viewFinder.parent as ViewGroup
+        parent.removeView(viewFinder)
+        parent.addView(viewFinder, 0)
 
-      viewFinder.surfaceTexture = it.surfaceTexture
-      updateTransform()
+        viewFinder.surfaceTexture = it.surfaceTexture
+        updateTransform()
+      }
+
+      // Bind use cases to lifecycle
+      // If Android Studio complains about "this" being not a LifecycleOwner
+      // try rebuilding the project or updating the appcompat dependency to
+      // version 1.1.0 or higher.
+      CameraX.bindToLifecycle(owner, preview)
     }
-
-    // Bind use cases to lifecycle
-    // If Android Studio complains about "this" being not a LifecycleOwner
-    // try rebuilding the project or updating the appcompat dependency to
-    // version 1.1.0 or higher.
-    CameraX.bindToLifecycle(owner, preview)
   }
 
   override fun updateTransform() {

@@ -7,7 +7,7 @@ import com.rightfromleftsw.smilehelper.permissions.PermissionDelegate
 import dagger.Module
 import dagger.Provides
 
-@Module
+@Module(includes = [FragmentModule::class])
 object MainActivityModule {
 
   @Provides
