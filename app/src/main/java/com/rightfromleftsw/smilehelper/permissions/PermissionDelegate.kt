@@ -20,7 +20,7 @@ abstract class PermissionDelegate(private val activity: Activity) {
    * If not, requests permission and returns false.
    * Typically called in onCreate()
    */
-  fun checkAndRequest(): Boolean =
+  fun isAllowedElseRequest(): Boolean =
       if (permissionsGranted()) true
       else {
         ActivityCompat.requestPermissions(activity, requiredPermissions, requestCodePermissions)

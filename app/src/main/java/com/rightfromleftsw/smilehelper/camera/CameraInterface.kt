@@ -6,14 +6,7 @@ interface CameraInterface {
 
   val layoutId: Int
 
-  val viewFinderId: Int
+  fun setupCamera(containerView: View)
 
-  fun setupCamera(view: View)
-
-  /**
-   * viewFinder may be different subtype of View. e.g. SurfaceView or TextureView
-   */
-  fun startCamera(viewFinder: View)
-
-  fun updateTransform()
+  fun startCamera()
 }

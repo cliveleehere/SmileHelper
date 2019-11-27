@@ -1,14 +1,15 @@
 package com.rightfromleftsw.smilehelper.camera
 
+import android.graphics.Matrix
+import android.util.DisplayMetrics
 import android.util.Size
-import android.view.TextureView
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.camera.core.CameraX
 import androidx.camera.core.Preview
 import androidx.camera.core.PreviewConfig
 import androidx.lifecycle.LifecycleOwner
 import com.rightfromleftsw.smilehelper.R
+import timber.log.Timber
 
 class CameraXWrapper(
     private val owner: LifecycleOwner
@@ -16,24 +17,32 @@ class CameraXWrapper(
 
   override val layoutId: Int = R.layout.camerax_view_finder
 
-  override val viewFinderId: Int = R.id.camerax_view_finder
+  private lateinit var viewFinder: TextureView
 
-  override fun setupCamera(view: View) {
-    view.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+  override fun setupCamera(containerView: View) {
+    viewFinder = containerView.findViewById(R.id.view_finder)
+    viewFinder.addOnLayoutChangeListener { _, left, top, right, bottom,
+                                           _, _, _, _ ->
+
+      val newDimens = Size(right - left, bottom - top)
+      Timber.d("Viewfinder layout changed. Size $newDimens")
+
       updateTransform()
     }
   }
 
-  override fun startCamera(viewFinder: View) {
-    // TextureView defined in the layout
-    require(viewFinder is TextureView)
+  override fun startCamera() {
+    if (!::viewFinder.isInitialized) {
+      Timber.e("setupCamera not called before startCamera")
+    }
 
     viewFinder.post {
+      val metrics = DisplayMetrics().also { viewFinder.display.getRealMetrics(it) }
+
       // Create configuration object for the viewfinder use case
       val previewConfig = PreviewConfig.Builder().apply {
-        setTargetResolution(Size(640, 480))
+        setTargetResolution(Size(metrics.widthPixels, metrics.heightPixels))
       }.build()
-
 
       // Build the viewfinder use case
       val preview = Preview(previewConfig)
@@ -51,13 +60,37 @@ class CameraXWrapper(
       }
 
       // Bind use cases to lifecycle
-      // If Android Studio complains about "this" being not a LifecycleOwner
-      // try rebuilding the project or updating the appcompat dependency to
-      // version 1.1.0 or higher.
       CameraX.bindToLifecycle(owner, preview)
     }
+
   }
 
-  override fun updateTransform() {
+  private fun updateTransform() {
+    if (!::viewFinder.isInitialized) {
+      Timber.e("setupCamera not called before startCamera")
+    }
+
+    val matrix = Matrix()
+
+    // Compute the center of the view finder
+    val centerX = viewFinder.width / 2f
+    val centerY = viewFinder.height / 2f
+
+    // Correct preview output to account for display rotation
+    val rotationDegrees = getDisplaySurfaceRotation(viewFinder.display) ?: return
+    matrix.postRotate(-rotationDegrees.toFloat(), centerX, centerY)
+
+    // Finally, apply transformations to our TextureView
+    viewFinder.setTransform(matrix)
+  }
+
+  companion object {
+    fun getDisplaySurfaceRotation(display: Display): Int? = when (display.rotation) {
+      Surface.ROTATION_0 -> 0
+      Surface.ROTATION_90 -> 90
+      Surface.ROTATION_180 -> 180
+      Surface.ROTATION_270 -> 270
+      else -> null
+    }
   }
 }

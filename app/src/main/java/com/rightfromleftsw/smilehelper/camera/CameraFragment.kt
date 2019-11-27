@@ -18,8 +18,6 @@ class CameraFragment: Fragment() {
   @Inject
   lateinit var cameraWrapper: CameraInterface
 
-  private lateinit var cameraView: View
-
   override fun onAttach(context: Context) {
     AndroidSupportInjection.inject(this)
     super.onAttach(context)
@@ -31,12 +29,10 @@ class CameraFragment: Fragment() {
       savedInstanceState: Bundle?): View? {
 
     val view = inflater.inflate(cameraWrapper.layoutId, container, false)
-    cameraView = view.findViewById(cameraWrapper.viewFinderId)
+    cameraWrapper.setupCamera(view)
 
-    cameraWrapper.setupCamera(cameraView)
-
-    if (cameraPermissionsDelegate.checkAndRequest()) {
-      cameraWrapper.startCamera(cameraView)
+    if (cameraPermissionsDelegate.isAllowedElseRequest()) {
+      cameraWrapper.startCamera()
     }
 
     return view
@@ -45,7 +41,7 @@ class CameraFragment: Fragment() {
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     if (cameraPermissionsDelegate.onRequestPermissionResult(requestCode)) {
-      cameraWrapper.startCamera(cameraView)
+      cameraWrapper.startCamera()
     }
   }
 }

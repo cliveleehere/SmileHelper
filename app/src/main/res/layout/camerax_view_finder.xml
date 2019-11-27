@@ -20,7 +20,7 @@
     tools:context="com.rightfromleftsw.smilehelper.main.MainActivity">
 
 <TextureView
-    android:id="@+id/camerax_view_finder"
+    android:id="@+id/view_finder"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 
