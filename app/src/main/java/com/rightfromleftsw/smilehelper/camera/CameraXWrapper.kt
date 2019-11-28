@@ -4,16 +4,19 @@ import android.graphics.Matrix
 import android.util.DisplayMetrics
 import android.util.Size
 import android.view.*
-import androidx.camera.core.CameraX
-import androidx.camera.core.Preview
-import androidx.camera.core.PreviewConfig
+import androidx.camera.core.*
 import androidx.lifecycle.LifecycleOwner
 import com.rightfromleftsw.smilehelper.R
+import com.rightfromleftsw.smilehelper.camera.analyzer.FirebaseCameraXFaceAnalyzer
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import java.util.concurrent.Executors
 
 class CameraXWrapper(
     private val owner: LifecycleOwner
 ) : CameraInterface {
+
+  private val executor = Executors.newSingleThreadExecutor()
 
   override val layoutId: Int = R.layout.camerax_view_finder
 
@@ -49,7 +52,6 @@ class CameraXWrapper(
 
       // Every time the viewfinder is updated, recompute layout
       preview.setOnPreviewOutputUpdateListener {
-
         // To update the SurfaceTexture, we have to remove it and re-add it
         val parent = viewFinder.parent as ViewGroup
         parent.removeView(viewFinder)
@@ -59,8 +61,18 @@ class CameraXWrapper(
         updateTransform()
       }
 
+      val analyzerConfig = ImageAnalysisConfig.Builder().apply {
+        setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
+      }.build()
+
+      Schedulers.from(executor)
+
+      val analyzerUseCase = ImageAnalysis(analyzerConfig).apply {
+        setAnalyzer(executor, FirebaseCameraXFaceAnalyzer())
+      }
+
       // Bind use cases to lifecycle
-      CameraX.bindToLifecycle(owner, preview)
+      CameraX.bindToLifecycle(owner, preview, analyzerUseCase)
     }
 
   }
