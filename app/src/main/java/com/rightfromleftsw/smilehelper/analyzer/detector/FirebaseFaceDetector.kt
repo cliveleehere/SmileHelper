@@ -1,16 +1,17 @@
-package com.rightfromleftsw.smilehelper.camera.analyzer
+package com.rightfromleftsw.smilehelper.analyzer.detector
 
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
+import android.media.Image
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions
-import timber.log.Timber
+import io.reactivex.Single
 
-// From https://firebase.google.com/docs/ml-kit/android/detect-faces
-class FirebaseCameraXFaceAnalyzer: ImageAnalysis.Analyzer {
+/**
+ * Converts Firebase face detection to an observable type
+ */
+class FirebaseFaceDetector : FaceDetector {
 
   private val detector: FirebaseVisionFaceDetector
 
@@ -30,22 +31,18 @@ class FirebaseCameraXFaceAnalyzer: ImageAnalysis.Analyzer {
     else -> throw Exception("Rotation must be 0, 90, 180, or 270.")
   }
 
-  override fun analyze(imageProxy: ImageProxy?, degrees: Int) {
-    val mediaImage = imageProxy?.image
+  override fun detectFace(mediaImage: Image, degrees: Int): Single<List<Face>> {
     val imageRotation = degreesToFirebaseRotation(degrees)
-    if (mediaImage != null) {
-      val image = FirebaseVisionImage.fromMediaImage(mediaImage, imageRotation)
+    val image = FirebaseVisionImage.fromMediaImage(mediaImage, imageRotation)
 
+    return Single.create<List<Face>> { emitter ->
       detector.detectInImage(image)
           .addOnSuccessListener { faces ->
-            faces.forEach {
-              if (it.smilingProbability > 0.8) {
-                Timber.d("Smiling!")
-              }
-            }
-          }
-          .addOnFailureListener { e ->
-            Timber.e(e)
+            emitter.onSuccess(
+                faces.map(FirebaseFaceToFaceMapper::map)
+            )
+          }.addOnFailureListener { e ->
+            emitter.onError(e)
           }
     }
   }

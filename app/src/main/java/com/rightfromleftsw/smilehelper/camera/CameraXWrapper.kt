@@ -8,13 +8,17 @@ import androidx.camera.core.*
 import androidx.lifecycle.LifecycleOwner
 import com.rightfromleftsw.smilehelper.BuildConfig
 import com.rightfromleftsw.smilehelper.R
-import com.rightfromleftsw.smilehelper.camera.analyzer.FirebaseCameraXFaceAnalyzer
-import io.reactivex.schedulers.Schedulers
+import com.rightfromleftsw.smilehelper.analyzer.FaceAnalyzer
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.Subject
 import timber.log.Timber
 import java.util.concurrent.Executors
 
 class CameraXWrapper(
-    private val owner: LifecycleOwner
+    private val owner: LifecycleOwner,
+    private val imageAnalyzer: ImageAnalysis.Analyzer,
+    private val faceAnalyzer: FaceAnalyzer
 ) : CameraInterface {
 
   private val executor = Executors.newSingleThreadExecutor()
@@ -35,12 +39,14 @@ class CameraXWrapper(
     }
   }
 
-  override fun startCamera() {
+  override fun startCamera(): Observable<List<CameraUiModel>> {
     if (!::viewFinder.isInitialized) {
       Timber.e("setupCamera not called before startCamera")
     }
 
     val lensFacing = if (BuildConfig.DEBUG) CameraX.LensFacing.FRONT else CameraX.LensFacing.BACK
+
+    val subject: Subject<List<CameraUiModel>> = PublishSubject.create()
 
     viewFinder.post {
       val metrics = DisplayMetrics().also { viewFinder.display.getRealMetrics(it) }
@@ -70,16 +76,24 @@ class CameraXWrapper(
         setLensFacing(lensFacing)
       }.build()
 
-      Schedulers.from(executor)
+//      Schedulers.from(executor)
 
       val analyzerUseCase = ImageAnalysis(analyzerConfig).apply {
-        setAnalyzer(executor, FirebaseCameraXFaceAnalyzer())
+        setAnalyzer(executor, imageAnalyzer)
       }
 
       // Bind use cases to lifecycle
       CameraX.bindToLifecycle(owner, preview, analyzerUseCase)
+
+      faceAnalyzer.faces()
+          .map { faces ->
+            faces.map { face ->
+              FaceToCameraUiModelMapper.map(face)
+            }
+          }.subscribe(subject)
     }
 
+    return subject
   }
 
   private fun updateTransform() {
