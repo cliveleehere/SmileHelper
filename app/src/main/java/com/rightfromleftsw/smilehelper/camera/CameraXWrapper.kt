@@ -6,6 +6,7 @@ import android.util.Size
 import android.view.*
 import androidx.camera.core.*
 import androidx.lifecycle.LifecycleOwner
+import com.rightfromleftsw.smilehelper.BuildConfig
 import com.rightfromleftsw.smilehelper.R
 import com.rightfromleftsw.smilehelper.camera.analyzer.FirebaseCameraXFaceAnalyzer
 import io.reactivex.schedulers.Schedulers
@@ -39,12 +40,15 @@ class CameraXWrapper(
       Timber.e("setupCamera not called before startCamera")
     }
 
+    val lensFacing = if (BuildConfig.DEBUG) CameraX.LensFacing.FRONT else CameraX.LensFacing.BACK
+
     viewFinder.post {
       val metrics = DisplayMetrics().also { viewFinder.display.getRealMetrics(it) }
 
       // Create configuration object for the viewfinder use case
       val previewConfig = PreviewConfig.Builder().apply {
-        setTargetResolution(Size(metrics.widthPixels, metrics.heightPixels))
+        setTargetAspectRatio(AspectRatio.RATIO_16_9)
+        setLensFacing(lensFacing)
       }.build()
 
       // Build the viewfinder use case
@@ -63,6 +67,7 @@ class CameraXWrapper(
 
       val analyzerConfig = ImageAnalysisConfig.Builder().apply {
         setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
+        setLensFacing(lensFacing)
       }.build()
 
       Schedulers.from(executor)
