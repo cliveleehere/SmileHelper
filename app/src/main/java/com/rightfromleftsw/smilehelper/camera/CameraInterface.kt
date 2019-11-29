@@ -1,7 +1,7 @@
 package com.rightfromleftsw.smilehelper.camera
 
 import android.view.View
-import io.reactivex.Observable
+import io.reactivex.Flowable
 
 interface CameraInterface {
 
@@ -9,5 +9,5 @@ interface CameraInterface {
 
   fun setupCamera(containerView: View)
 
-  fun startCamera(): Observable<List<CameraUiModel>>
+  fun startCamera(): Flowable<List<CameraUiModel>>
 }

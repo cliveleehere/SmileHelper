@@ -1,5 +1,6 @@
 package com.rightfromleftsw.smilehelper.application
 
+import android.os.StrictMode
 import com.rightfromleftsw.smilehelper.BuildConfig
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
@@ -16,6 +17,7 @@ class SmilesHelperApplication: DaggerApplication() {
 
     if (BuildConfig.DEBUG) {
       Timber.plant(Timber.DebugTree())
+      StrictMode.enableDefaults()
     }
   }
 }

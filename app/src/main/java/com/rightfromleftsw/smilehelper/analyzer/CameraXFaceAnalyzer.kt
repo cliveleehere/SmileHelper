@@ -1,10 +1,12 @@
 package com.rightfromleftsw.smilehelper.analyzer
 
+import android.media.Image
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.rightfromleftsw.smilehelper.analyzer.detector.Face
 import com.rightfromleftsw.smilehelper.analyzer.detector.FaceDetector
-import io.reactivex.Observable
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import timber.log.Timber
@@ -16,17 +18,25 @@ class CameraXFaceAnalyzer(
     private val faceDetector: FaceDetector
 ): ImageAnalysis.Analyzer, FaceAnalyzer {
 
-  private val subject: Subject<List<Face>> = PublishSubject.create<List<Face>>()
+  private val subject: Subject<Pair<Image, Int>> = PublishSubject.create()
 
   override fun analyze(imageProxy: ImageProxy?, degrees: Int) {
     if (imageProxy != null && imageProxy.image != null) {
       val mediaImage = imageProxy.image!!
-      faceDetector.detectFace(mediaImage, degrees).toObservable()
-          .subscribe(subject)
+
+      subject.onNext(mediaImage to degrees)
     } else {
       Timber.d("Null image")
     }
   }
 
-  override fun faces(): Observable<List<Face>> = subject
+  override fun faces(): Flowable<List<Face>> {
+    return subject
+        .toFlowable(BackpressureStrategy.DROP)
+        .flatMap {
+          val mediaImage = it.first
+          val degrees = it.second
+          faceDetector.detectFace(mediaImage, degrees).toFlowable()
+        }
+  }
 }

@@ -9,9 +9,8 @@ import androidx.lifecycle.LifecycleOwner
 import com.rightfromleftsw.smilehelper.BuildConfig
 import com.rightfromleftsw.smilehelper.R
 import com.rightfromleftsw.smilehelper.analyzer.FaceAnalyzer
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.Subject
+import io.reactivex.Flowable
+import io.reactivex.processors.PublishProcessor
 import timber.log.Timber
 import java.util.concurrent.Executors
 
@@ -39,14 +38,14 @@ class CameraXWrapper(
     }
   }
 
-  override fun startCamera(): Observable<List<CameraUiModel>> {
+  override fun startCamera(): Flowable<List<CameraUiModel>> {
     if (!::viewFinder.isInitialized) {
       Timber.e("setupCamera not called before startCamera")
     }
 
     val lensFacing = if (BuildConfig.DEBUG) CameraX.LensFacing.FRONT else CameraX.LensFacing.BACK
 
-    val subject: Subject<List<CameraUiModel>> = PublishSubject.create()
+    val processor = PublishProcessor.create<List<CameraUiModel>> ()
 
     viewFinder.post {
       val metrics = DisplayMetrics().also { viewFinder.display.getRealMetrics(it) }
@@ -76,8 +75,6 @@ class CameraXWrapper(
         setLensFacing(lensFacing)
       }.build()
 
-//      Schedulers.from(executor)
-
       val analyzerUseCase = ImageAnalysis(analyzerConfig).apply {
         setAnalyzer(executor, imageAnalyzer)
       }
@@ -90,10 +87,11 @@ class CameraXWrapper(
             faces.map { face ->
               FaceToCameraUiModelMapper.map(face)
             }
-          }.subscribe(subject)
+          }
+          .subscribe(processor)
     }
 
-    return subject
+    return processor
   }
 
   private fun updateTransform() {

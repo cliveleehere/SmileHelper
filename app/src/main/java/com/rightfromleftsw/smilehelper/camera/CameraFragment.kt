@@ -14,7 +14,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class CameraFragment: Fragment() {
@@ -61,13 +60,14 @@ class CameraFragment: Fragment() {
 
   private fun startCamera() {
     compositeDisposable.add(camera.startCamera()
-        .debounce(2000, TimeUnit.SECONDS, Schedulers.computation())
+        .subscribeOn(Schedulers.computation())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe({ models ->
           models.firstOrNull {
             it.emotion == Emotion.HAPPY
           }?.let {
-            Toast.makeText(requireContext(), "Smile found!", Toast.LENGTH_SHORT)
+            Toast.makeText(requireContext(), "Smile found!", Toast.LENGTH_SHORT).show()
+            Timber.w("Smile found!")
           }
         }) {
           Timber.w("startCamera didn't return anything useful")
