@@ -31,3 +31,7 @@ I made a version of this at a hackathon, using Unity and Hololense. Because the 
 
 
 [Cover letter](cover_letter.pdf)
+
+### Setup
+Create your own Firebase google-services.json and put it in the `/app` folder!
+When setting up the Firebase project, the package name is "com.rightfromleftsw.smilehelper"
