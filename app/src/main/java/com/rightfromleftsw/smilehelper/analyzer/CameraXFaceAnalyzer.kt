@@ -10,6 +10,7 @@ import io.reactivex.Flowable
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 /**
  * Uses a [FaceDetector] in a CameraX Analyzer
@@ -32,6 +33,7 @@ class CameraXFaceAnalyzer(
 
   override fun faces(): Flowable<List<Face>> {
     return subject
+        .throttleLatest(250, TimeUnit.MILLISECONDS)
         .toFlowable(BackpressureStrategy.DROP)
         .flatMap {
           val mediaImage = it.first

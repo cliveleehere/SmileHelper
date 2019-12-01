@@ -26,6 +26,7 @@ April - the 2 player mode (show both the front and back cameras) Stretch goal - 
 ### About Me
 
 I’m an android engineer by day. I work at a eCommerce company, and I work on the augmented reality / 3d team, and work with ARCore / Sceneform. I also work on my personal apps by night. My personal website is at ​https://cliveleehere.github.io/​ , which lists some of my apps.
+Play store apps I’ve built: https://play.google.com/store/apps/developer?id=Right+From+Left
 
 I made a version of this at a hackathon, using Unity and Hololense. Because the machine learning model was on the cloud (using Face API https://azure.microsoft.com/en-us/services/cognitive-services/face/​ ), the performance was highly dependent on the network latency. That version of the app lives in https://github.com/RealityVirtually2019/8-smilehelper
 
